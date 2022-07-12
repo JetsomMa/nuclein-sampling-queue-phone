@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    cattle.io/creator: norman
+    workload.user.cattle.io/workloadselector: deployment-dp-${project_name}
+  name: ${project_name}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      workload.user.cattle.io/workloadselector: deployment-dp-${project_name}
+  template:
+    metadata:
+      labels:
+        workload.user.cattle.io/workloadselector: deployment-dp-${project_name}
+    spec:
+      containers:
+      - image: 129.28.46.148:5000/${project_name}:${version_name}
+        imagePullPolicy: Always
+        name: ${project_name}
+        ports:
+        - containerPort: 80
+          name: tcp80
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    cattle.io/creator: norman
+  name: ${project_name}-nodeport
+spec:
+  ports:
+  - name: tcp80
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: ${port}
+  selector:
+    workload.user.cattle.io/workloadselector: deployment-dp-${project_name}
+  type: NodePort
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    cattle.io/creator: norman
+  name: ${project_name}
+spec:
+  ports:
+  - name: tcp80
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    workload.user.cattle.io/workloadselector: deployment-dp-${project_name}
+  type: ClusterIP
