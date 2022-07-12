@@ -1,4 +1,7 @@
-# nucleic-acid-point-queue
+# 访问地址
+https://www.mashaojie.cn/nuclein-sampling-queue-phone/
+
+# nuclein-sampling-queue-phone
 
 ## Project setup
 ```
